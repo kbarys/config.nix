@@ -3,23 +3,34 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-darwin.url = "github:LnL7/nix-darwin";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    inputs@{
+    {
       self,
-      nix-darwin,
-      nixpkgs,
-      nix-homebrew,
+      darwin,
+      homebrew,
+      home-manager,
       ...
     }:
     let
       configuration =
-        { pkgs, config, ... }:
+        { pkgs, ... }:
         {
+          imports = [
+            homebrew.darwinModules.nix-homebrew
+            home-manager.darwinModules.home-manager
+          ];
+
           # List packages installed in system profile. To search by name, run:
           # $ nix-env -qaP | grep wget
           environment.systemPackages = [
@@ -27,6 +38,8 @@
             pkgs.nixfmt-rfc-style
             pkgs.neovim
             pkgs.git
+            pkgs.tmux
+            pkgs.nodejs
           ];
 
           fonts.packages = [ (pkgs.nerdfonts.override { fonts = [ "Meslo" ]; }) ];
@@ -34,20 +47,43 @@
           homebrew = {
             enable = true;
             casks = [
-              "iterm2"
+              "google-chrome"
               "visual-studio-code"
               "spotify"
-              "monitorcontrol"
               "slack"
-              "mac-mouse-fix"
-              "google-chrome"
+              "iterm2"
               "docker"
-              "flux"
               "raycast"
+              "mac-mouse-fix"
+              "monitorcontrol"
+              "flux"
             ];
             onActivation.cleanup = "zap";
             onActivation.autoUpdate = true;
             onActivation.upgrade = true;
+          };
+
+          system.defaults = {
+            dock.autohide = true;
+            dock.orientation = "bottom";
+          };
+
+          users.users.bamil = {
+            name = "bamil";
+            home = "/Users/bamil";
+          };
+
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.bamil = {
+              programs.git = {
+                enable = true;
+                userName = "Kamil Baryś";
+                userEmail = "kamil.barys@stxnext.pl";
+              };
+              home.stateVersion = "25.05";
+            };
           };
 
           # environment
@@ -79,17 +115,8 @@
     {
       # Build darwin flake using:
       # $ darwin-rebuild build --flake .#simple
-      darwinConfigurations."mac-mini" = nix-darwin.lib.darwinSystem {
-        modules = [
-          configuration
-          nix-homebrew.darwinModules.nix-homebrew
-          {
-            nix-homebrew = {
-              enable = true;
-              user = "bamil";
-            };
-          }
-        ];
+      darwinConfigurations."mac-mini" = darwin.lib.darwinSystem {
+        modules = [ configuration ];
       };
 
       # Expose the package set, including overlays, for convenience.
