@@ -34,8 +34,6 @@
           # List packages installed in system profile. To search by name, run:
           # $ nix-env -qaP | grep wget
           environment.systemPackages = [
-            pkgs.nixd
-            pkgs.nixfmt-rfc-style
             pkgs.neovim
             pkgs.git
             pkgs.tmux
@@ -44,6 +42,10 @@
 
           fonts.packages = [ (pkgs.nerdfonts.override { fonts = [ "Meslo" ]; }) ];
 
+          nix-homebrew = {
+            enable = true;
+            user = "bamil";
+          };
           homebrew = {
             enable = true;
             casks = [
@@ -54,9 +56,9 @@
               "iterm2"
               "docker"
               "raycast"
-              "mac-mouse-fix"
               "monitorcontrol"
               "flux"
+              "zed"
             ];
             onActivation.cleanup = "zap";
             onActivation.autoUpdate = true;
@@ -77,12 +79,25 @@
             useGlobalPkgs = true;
             useUserPackages = true;
             users.bamil = {
-              programs.git = {
-                enable = true;
-                userName = "Kamil Baryś";
-                userEmail = "kamil.barys@stxnext.pl";
-              };
               home.stateVersion = "25.05";
+              programs = {
+                git = {
+                  enable = true;
+                  userName = "Kamil Baryś";
+                  userEmail = "kamil.barys@stxnext.pl";
+                };
+                zsh = {
+                  enable = true;
+                  enableCompletion = true;
+                  enableAutosuggestions = true;
+                  enableSyntaxHighlighting = true;
+                  oh-my-zsh = {
+                    enable = true;
+                    theme = "robbyrussell";
+                    plugins = ["vi-mode" "git" "gh" "docker" "docker-compose"];
+                  };
+                };
+              };
             };
           };
 
