@@ -81,6 +81,10 @@
             users.bamil = {
               home.stateVersion = "25.05";
               programs = {
+                neovim = {
+                  enable = true;
+                  defaultEditor = true;
+                };
                 git = {
                   enable = true;
                   userName = "Kamil Baryś";
@@ -96,6 +100,9 @@
                     theme = "robbyrussell";
                     plugins = ["vi-mode" "git" "gh" "docker" "docker-compose"];
                   };
+                  localVariables = {
+                      VI_MODE_SET_CURSOR = true;
+                    };
                 };
               };
             };
