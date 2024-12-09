@@ -39,6 +39,7 @@
             pkgs.tmux
             pkgs.nodejs
             pkgs.corepack
+            pkgs.deno
             pkgs.nixd
             pkgs.nil
           ];
