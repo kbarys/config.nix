@@ -38,6 +38,9 @@
             pkgs.git
             pkgs.tmux
             pkgs.nodejs
+            pkgs.corepack
+            pkgs.nixd
+            pkgs.nil
           ];
 
           fonts.packages = [ (pkgs.nerdfonts.override { fonts = [ "Meslo" ]; }) ];
@@ -59,6 +62,7 @@
               "monitorcontrol"
               "flux"
               "zed"
+              "mac-mouse-fix"
             ];
             onActivation.cleanup = "zap";
             onActivation.autoUpdate = true;
