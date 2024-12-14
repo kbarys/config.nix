@@ -36,6 +36,7 @@
           environment.systemPackages = [
             pkgs.neovim
             pkgs.git
+            pkgs.lazygit
             pkgs.tmux
             pkgs.nodejs
             pkgs.corepack
